@@ -1,0 +1,3 @@
+- insert:
+    - id: effort-lock
+      name: dsh-effort-lock
