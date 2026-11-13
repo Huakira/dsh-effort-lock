@@ -9,16 +9,20 @@ window.__ModuleLoader__.load({
 	factory: () => {
 		const CLAUDE_RE = /(^|\/)(claude|fable|sonnet|opus|haiku)[\w.-]*$/i;
 		const MODEL_HOST_FLAG = "data-dsh-claude-model-host";
-		const EFFORT_ROOT = ".dsh-claude-effort";
-		const EFFORT_TRACK = ".dsh-claude-effort-track";
 		const POPOVER = ".dsh-claude-effort-popover";
 		const NOTE_CLS = "dsh-effort-lock-note";
+		const HB = "data-dsh-effort-lock-applied";
+		const STATE = "data-dsh-effort-lock-state";
 		const ZH = /^zh/i.test(navigator.language || "");
 		const NOTE_TEXT = ZH
 			? "Claude 会话进行中不允许切换推理等级（切换会重付整段历史缓存）"
 			: "Effort is locked for live Claude sessions (switching re-bills the whole history)";
 		const TURN_START = "turn/start";
 		const observed = new WeakSet();
+
+		function debug(state) {
+			try { document.documentElement.setAttribute(STATE, state); } catch { /* noop */ }
+		}
 
 		function currentModel() {
 			const btn = document.querySelector('[aria-label^="Select model, currently"]');
@@ -33,12 +37,18 @@ window.__ModuleLoader__.load({
 			return log ? log.querySelectorAll("img, p, [class*='message']").length > 0 : false;
 		}
 		function shouldLock() {
-			if (!isClaude(currentModel())) return false;
-			if (!turnsStarted()) return false;
+			const model = currentModel();
+			const claude = isClaude(model);
+			let turns = null;
+			try { turns = turnsStarted(); } catch { turns = false; }
+			let evOk = true;
 			try {
 				const snap = window.__DSH_SESSION_EVENTS__;
-				return snap ? snap.includes(TURN_START) : true; // fallback: visible history means a turn existed
-			} catch { return true; }
+				evOk = snap ? snap.includes(TURN_START) : true;
+			} catch { evOk = true; }
+			const lock = claude && turns && evOk;
+			debug(JSON.stringify({ model: model ?? null, claude, turns, evOk, lock }));
+			return lock;
 		}
 
 		function applyLock() {
@@ -73,16 +83,37 @@ window.__ModuleLoader__.load({
 			applyLock();
 		}
 
+		function attach(mo) {
+			const host = document.body ?? document.documentElement;
+			mo.observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label", "class"] });
+			scan();
+		}
+
 		function scan() {
-			if (!document.querySelector(`[${MODEL_HOST_FLAG}]`)) return; // only the Claude-style picker has this popover
+			if (!document.querySelector(`[${MODEL_HOST_FLAG}]`)) {
+				debug(JSON.stringify({ model: currentModel() ?? null, reason: "no-claude-host" }));
+				return; // only the Claude-style picker has this popover
+			}
 			observePopover();
 			applyLock();
 		}
 
 		function apply(ctx) {
+			try { document.documentElement.setAttribute(HB, "1"); } catch { /* noop */ }
 			const mo = new MutationObserver(scan);
-			mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label", "class"] });
-			scan();
+			try {
+				if (document.body) {
+					attach(mo);
+				} else {
+					// Head-time boot: wait for <body> before observing.
+					const w = new MutationObserver(() => {
+						if (document.body) { w.disconnect(); attach(mo); }
+					});
+					w.observe(document.documentElement, { childList: true });
+				}
+			} catch (e) {
+				debug(JSON.stringify({ fatal: String(e && e.message || e) }));
+			}
 			if (typeof ctx.effect === "function") ctx.effect(() => () => mo.disconnect(), "effort-lock: observer");
 		}
 
