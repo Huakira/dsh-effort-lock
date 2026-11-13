@@ -1,23 +1,52 @@
 {
-	"name": "dsh-effort-lock",
-	"version": "0.1.1",
-	"description": "Locks the Claude (anthropic) reasoning-effort selector mid-conversation: grays out the slider popover with an explanatory note so a mid-session effort switch cannot re-bill the cache.",
-	"keywords": ["dsh", "dsh-plugin", "deepseek-harness", "ui"],
-	"license": "MIT",
-	"type": "module",
-	"main": "./index.js",
-	"exports": {
-		".": "./index.js",
-		"./client": "./client.js",
-		"./cordis.patch.yml": "./cordis.patch.yml"
-	},
-	"files": ["index.js", "client.js", "cordis.patch.yml"],
-	"dsh": {
-		"bundle": { "patch": "./cordis.patch.yml" },
-		"client": {
-			"platform": "web",
-			"inject": ["@deepseek-ai/dsh-client-ui-slots", "@deepseek-ai/dsh-client-locale"],
-			"immediately": true
-		}
-	}
+  "name": "@huakira/effort-lock",
+  "version": "0.1.1",
+  "description": "Locks the Claude (anthropic) reasoning-effort selector mid-conversation: grays out the slider popover with an explanatory note so a mid-session effort switch cannot re-bill the cache.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "ui"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-locale"
+      ],
+      "immediately": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Huakira/dsh-effort-lock.git"
+  },
+  "author": {
+    "name": "Huakira",
+    "email": "huakexie@proton.me"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0",
+    "node": ">=20"
+  }
 }
