@@ -79,7 +79,7 @@ window.__ModuleLoader__.load({
 			applyLock();
 		}
 
-		function apply() {
+		function apply(ctx) {
 			const mo = new MutationObserver(scan);
 			mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-label", "class"] });
 			scan();
