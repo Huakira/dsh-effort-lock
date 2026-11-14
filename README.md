@@ -2,7 +2,7 @@
 
 > 个人自用插件，代码和文档由 AI 参与编写，不承诺维护。使用前请先备份 DSH 配置。
 
-安装：`dsh plugin --profile web add @huakirax/effort-lock`
+安装：`dsh plugin --profile web add @huakirax/dsh-effort-lock`
 
 Locks the reasoning-effort popover in the Claude-style model picker while the current
 conversation uses a Claude model and already has at least one turn. Switching effort
