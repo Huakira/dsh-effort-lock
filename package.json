@@ -1,6 +1,6 @@
 {
   "name": "@huakirax/dsh-effort-lock",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Locks the Claude (anthropic) reasoning-effort selector mid-conversation: grays out the slider popover with an explanatory note so a mid-session effort switch cannot re-bill the cache.",
   "keywords": [
     "dsh",

@@ -5,7 +5,7 @@
 // the conversation has at least one turn. New conversations and non-Claude
 // models stay free to switch.
 window.__ModuleLoader__.load({
-	id: "dsh-effort-lock",
+	id: "@huakirax/dsh-effort-lock",
 	factory: () => {
 		const CLAUDE_RE = /(^|\/)(claude|fable|sonnet|opus|haiku)[\w.-]*$/i;
 		const MODEL_HOST_FLAG = "data-dsh-claude-model-host";
